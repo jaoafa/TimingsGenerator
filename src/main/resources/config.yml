@@ -1,0 +1,2 @@
+interval: 3 # 自動 URL 生成間隔 (時間)
+auto-delete: true # ログファイルの自動削除機能の有無
