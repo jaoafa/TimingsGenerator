@@ -6,6 +6,8 @@ import com.github.siroshun09.sirolibrary.config.BukkitConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.TimeUnit;
+
 public class TimingsGenerator extends JavaPlugin {
     private static TimingsGenerator INSTANCE;
 
@@ -42,8 +44,7 @@ public class TimingsGenerator extends JavaPlugin {
             SiroExecutors.getExecutor().submit(new LogFileCheckingTask());
         }
 
-        Bukkit.getScheduler().runTaskTimer(this,
-                () -> Timings.generateReport(TimingsGeneratorListener.get()), getInterval(), getInterval());
+        SiroExecutors.getScheduler().scheduleAtFixedRate(this::runGenerateTask, getInterval(), getInterval(), TimeUnit.HOURS);
     }
 
     @Override
@@ -55,10 +56,18 @@ public class TimingsGenerator extends JavaPlugin {
     }
 
     private long getInterval() {
-        return config.getLong("interval", 3) * 3600 * 20;
+        return config.getLong("interval", 3);
     }
 
     private boolean isEnabledAutoDelete() {
         return config.getBoolean("auto-delete", true);
+    }
+
+    private void runGenerateTask() {
+        Bukkit.getScheduler().runTask(this, this::generateReport);
+    }
+
+    private void generateReport() {
+        Timings.generateReport(new TimingsGeneratorListener());
     }
 }

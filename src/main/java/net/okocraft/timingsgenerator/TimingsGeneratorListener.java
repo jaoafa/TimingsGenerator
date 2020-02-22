@@ -7,17 +7,11 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 public class TimingsGeneratorListener extends TimingsReportListener {
-    private final static TimingsGeneratorListener INSTANCE = new TimingsGeneratorListener();
 
     private final FileLogger fileLogger = new FileLogger(TimingsGenerator.get().getDataFolder().toPath().resolve("logs"));
 
-    private TimingsGeneratorListener() {
+    TimingsGeneratorListener() {
         super(Bukkit.getConsoleSender());
-    }
-
-    @NotNull
-    static TimingsGeneratorListener get() {
-        return INSTANCE;
     }
 
     @Override
