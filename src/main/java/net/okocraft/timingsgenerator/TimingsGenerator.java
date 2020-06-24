@@ -18,13 +18,15 @@ import java.util.concurrent.TimeUnit;
 
 public class TimingsGenerator extends TimingsReportListener {
 
+    private static TimingsGenerator INSTANCE;
+
     private final TimingsGeneratorPlugin plugin;
 
     private final Configuration config;
     private final FileLogger fileLogger;
     private final ScheduledExecutorService scheduler;
 
-    TimingsGenerator(TimingsGeneratorPlugin plugin) {
+    private TimingsGenerator(TimingsGeneratorPlugin plugin) {
         super(plugin.getServer().getConsoleSender());
 
         this.plugin = plugin;
@@ -38,6 +40,26 @@ public class TimingsGenerator extends TimingsReportListener {
         if (config.getBoolean("auto-delete")) {
             scheduler.execute(this::checkLogFiles);
         }
+    }
+
+    static void start(TimingsGeneratorPlugin plugin) {
+        if (INSTANCE != null) {
+            shutdown();
+        }
+
+        INSTANCE = new TimingsGenerator(plugin);
+    }
+
+    static void shutdown() {
+        if (INSTANCE != null) {
+            INSTANCE.end();
+            INSTANCE = null;
+        }
+    }
+
+    private void end() {
+        scheduler.shutdownNow();
+        plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 
     @Override
