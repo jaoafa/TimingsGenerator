@@ -2,7 +2,6 @@ package net.okocraft.timingsgenerator;
 
 import co.aikar.timings.TimingsReportListener;
 import com.github.siroshun09.filelogger.FileLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 public class TimingsGeneratorListener extends TimingsReportListener {
@@ -10,7 +9,7 @@ public class TimingsGeneratorListener extends TimingsReportListener {
     private final FileLogger fileLogger;
 
     TimingsGeneratorListener(TimingsGeneratorPlugin plugin) {
-        super(Bukkit.getConsoleSender());
+        super(plugin.getServer().getConsoleSender());
 
         fileLogger = new FileLogger(plugin.getDataFolder().toPath().resolve("logs"));
     }
