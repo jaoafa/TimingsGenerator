@@ -10,7 +10,6 @@ Timings の URL を定期的に自動生成する Paper プラグインです。
 
 - Java 11+
 - **Paper** (Minecraft Version 1.15+, not working with Spigot)
-- [SiroLibrary](https://github.com/SiroPlugins/SiroLibrary) 1.5.1+
 
 ## Usage
 
