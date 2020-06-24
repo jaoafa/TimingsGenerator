@@ -5,16 +5,14 @@ import com.github.siroshun09.filelogger.FileLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import java.nio.file.Path;
-
 public class TimingsGeneratorListener extends TimingsReportListener {
 
     private final FileLogger fileLogger;
 
-    TimingsGeneratorListener(Path dir) {
+    TimingsGeneratorListener(TimingsGeneratorPlugin plugin) {
         super(Bukkit.getConsoleSender());
 
-        fileLogger = new FileLogger(dir);
+        fileLogger = new FileLogger(plugin.getDataFolder().toPath().resolve("logs"));
     }
 
     @Override
