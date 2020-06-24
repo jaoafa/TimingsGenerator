@@ -1,21 +1,26 @@
 package net.okocraft.timingsgenerator;
 
 import co.aikar.timings.TimingsReportListener;
-import com.github.siroshun09.sirolibrary.logging.FileLogger;
+import com.github.siroshun09.filelogger.FileLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.jetbrains.annotations.NotNull;
+
+import java.nio.file.Path;
 
 public class TimingsGeneratorListener extends TimingsReportListener {
 
-    private final FileLogger fileLogger = new FileLogger(TimingsGeneratorPlugin.get().getDataFolder().toPath().resolve("logs"));
+    private final FileLogger fileLogger;
 
-    TimingsGeneratorListener() {
+    TimingsGeneratorListener(Path dir) {
         super(Bukkit.getConsoleSender());
+
+        fileLogger = new FileLogger(dir);
     }
 
     @Override
-    public void sendMessage(@NotNull String message) {
-        fileLogger.write(ChatColor.stripColor(message));
+    public void sendMessage(String message) {
+        if (message != null) {
+            fileLogger.write(ChatColor.stripColor(message));
+        }
     }
 }
