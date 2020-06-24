@@ -8,13 +8,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.TimeUnit;
 
-public class TimingsGenerator extends JavaPlugin {
-    private static TimingsGenerator INSTANCE;
+public class TimingsGeneratorPlugin extends JavaPlugin {
+    private static TimingsGeneratorPlugin INSTANCE;
 
     private BukkitConfig config;
     private boolean isPaper;
 
-    public TimingsGenerator() {
+    public TimingsGeneratorPlugin() {
         INSTANCE = this;
         try {
             Class.forName("co.aikar.timings.Timing");
@@ -24,7 +24,7 @@ public class TimingsGenerator extends JavaPlugin {
         }
     }
 
-    public static TimingsGenerator get() {
+    public static TimingsGeneratorPlugin get() {
         return INSTANCE;
     }
 

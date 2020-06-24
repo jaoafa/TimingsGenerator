@@ -14,7 +14,7 @@ public class LogFileCheckingTask implements Runnable {
 
     @Override
     public void run() {
-        Path dirPath = TimingsGenerator.get().getDataFolder().toPath().resolve("logs");
+        Path dirPath = TimingsGeneratorPlugin.get().getDataFolder().toPath().resolve("logs");
         if (FileUtil.isNotExist(dirPath)) {
             return;
         }
@@ -28,7 +28,7 @@ public class LogFileCheckingTask implements Runnable {
 
             for (Path file : files) {
                 Files.deleteIfExists(file);
-                TimingsGenerator.get().getLogger().info("ファイルを削除しました: " + file.toAbsolutePath().toString());
+                TimingsGeneratorPlugin.get().getLogger().info("ファイルを削除しました: " + file.toAbsolutePath().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

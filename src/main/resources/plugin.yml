@@ -1,5 +1,5 @@
-name: TimingsGenerator
-main: net.okocraft.timingsgenerator.TimingsGenerator
+name: TimingsGeneratorPlugin
+main: net.okocraft.timingsgenerator.TimingsGeneratorPlugin
 version: ${project.version}
 api-version: "1.15"
 author: Siroshun09

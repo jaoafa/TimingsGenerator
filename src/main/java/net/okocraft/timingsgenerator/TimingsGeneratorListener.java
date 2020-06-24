@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class TimingsGeneratorListener extends TimingsReportListener {
 
-    private final FileLogger fileLogger = new FileLogger(TimingsGenerator.get().getDataFolder().toPath().resolve("logs"));
+    private final FileLogger fileLogger = new FileLogger(TimingsGeneratorPlugin.get().getDataFolder().toPath().resolve("logs"));
 
     TimingsGeneratorListener() {
         super(Bukkit.getConsoleSender());
