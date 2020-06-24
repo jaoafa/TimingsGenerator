@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TimingsGeneratorListener extends TimingsReportListener {
+public class TimingsGenerator extends TimingsReportListener {
 
     private final TimingsGeneratorPlugin plugin;
 
@@ -24,7 +24,7 @@ public class TimingsGeneratorListener extends TimingsReportListener {
     private final FileLogger fileLogger;
     private final ScheduledExecutorService scheduler;
 
-    TimingsGeneratorListener(TimingsGeneratorPlugin plugin) {
+    TimingsGenerator(TimingsGeneratorPlugin plugin) {
         super(plugin.getServer().getConsoleSender());
 
         this.plugin = plugin;

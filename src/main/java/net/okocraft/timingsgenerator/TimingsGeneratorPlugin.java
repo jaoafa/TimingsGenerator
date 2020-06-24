@@ -68,6 +68,6 @@ public class TimingsGeneratorPlugin extends JavaPlugin {
     }
 
     private void generateReport() {
-        Timings.generateReport(new TimingsGeneratorListener());
+        Timings.generateReport(new TimingsGenerator());
     }
 }
