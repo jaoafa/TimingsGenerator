@@ -6,7 +6,7 @@
 
     <groupId>net.okocraft</groupId>
     <artifactId>timingsgenerator</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
 
     <name>TimingsGenerator</name>
     <url>https://github.com/okocraft/TimingsGenerator</url>
@@ -50,10 +50,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.siroshun09</groupId>
-            <artifactId>sirolibrary</artifactId>
-            <version>1.5.1</version>
-            <scope>provided</scope>
+            <groupId>com.github.siroshun09.filelogger</groupId>
+            <artifactId>filelogger</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.siroshun09.configapi</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -83,8 +89,43 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <finalName>${project.name}-${project.version}</finalName>
+                    <finalName>${project.name}-${project.version}-original</finalName>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <finalName>${project.name}-${project.version}</finalName>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.github.siroshun09.configapi</pattern>
+                            <shadedPattern>net.okocraft.timingsgenerator.libs.configapi</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.siroshun09.filelogger</pattern>
+                            <shadedPattern>net.okocraft.timingsgenerator.libs.filelogger</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
