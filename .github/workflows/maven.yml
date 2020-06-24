@@ -17,23 +17,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B package --file pom.xml
-      - name: Compress generated file
-        id: compress_generated_files
-        run: zip -r TimingsGenerator target/
-      - name: Discord notification (O)
-        if: github.ref == 'refs/heads/master'
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_O }}
+        run: |
+          mvn clean
+          mvn -B package --file pom.xml
+      - name: Move built jars
+        run: |
+          mkdir staging
+          cp -r target/ staging
+      - uses: actions/upload-artifact@v1
         with:
-          args: ':new: TimingsGenerator が更新されました: https://github.com/okocraft/TimingsGenerator'
-      - name: Send generated files to Discord (O)
-        uses: sinshutu/upload-to-discord@master
-        if: github.ref == 'refs/heads/master'
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_O }}
-        with:
-          args: TimingsGenerator.zip
+          name: Package
+          path: staging
