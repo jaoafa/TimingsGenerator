@@ -6,16 +6,21 @@ import com.github.siroshun09.configapi.common.Configuration;
 import com.github.siroshun09.filelogger.FileLogger;
 import org.bukkit.ChatColor;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public class TimingsGeneratorListener extends TimingsReportListener {
 
     private final Configuration config;
     private final FileLogger fileLogger;
+    private final ScheduledExecutorService scheduler;
 
     TimingsGeneratorListener(TimingsGeneratorPlugin plugin) {
         super(plugin.getServer().getConsoleSender());
 
         config = new BukkitConfig(plugin, "config.yml", true);
         fileLogger = new FileLogger(plugin.getDataFolder().toPath().resolve("logs"));
+        scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
     @Override
