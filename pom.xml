@@ -6,7 +6,7 @@
 
     <groupId>net.okocraft</groupId>
     <artifactId>timingsgenerator</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
 
     <name>TimingsGenerator</name>
     <url>https://github.com/okocraft/TimingsGenerator</url>
