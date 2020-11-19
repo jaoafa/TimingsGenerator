@@ -2,37 +2,40 @@ package net.okocraft.timingsgenerator;
 
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsReportListener;
-import com.github.siroshun09.configapi.bukkit.BukkitConfig;
+import com.github.siroshun09.configapi.bukkit.BukkitYamlFactory;
 import com.github.siroshun09.configapi.common.Configuration;
-import com.github.siroshun09.filelogger.FileLogger;
 import org.bukkit.ChatColor;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class TimingsGenerator extends TimingsReportListener {
-
-    private static TimingsGenerator INSTANCE;
 
     private final TimingsGeneratorPlugin plugin;
 
     private final Configuration config;
-    private final FileLogger fileLogger;
+    private final Path dirPath;
     private final ScheduledExecutorService scheduler;
 
-    private TimingsGenerator(TimingsGeneratorPlugin plugin) {
+    TimingsGenerator(TimingsGeneratorPlugin plugin) {
         super(plugin.getServer().getConsoleSender());
 
         this.plugin = plugin;
 
-        config = new BukkitConfig(plugin, "config.yml", true);
-        fileLogger = new FileLogger(plugin.getDataFolder().toPath().resolve("logs"));
+        config = BukkitYamlFactory.loadUnsafe(plugin, "config.yml");
+        dirPath = plugin.getDataFolder().toPath().resolve("logs");
         scheduler = Executors.newSingleThreadScheduledExecutor();
 
         reschedule();
@@ -42,30 +45,23 @@ public class TimingsGenerator extends TimingsReportListener {
         }
     }
 
-    static void start(TimingsGeneratorPlugin plugin) {
-        if (INSTANCE != null) {
-            shutdown();
+    void shutdown() {
+        scheduler.shutdown();
+
+        try {
+            scheduler.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            plugin.getLogger().log(Level.SEVERE, "", e);
+            e.printStackTrace();
         }
 
-        INSTANCE = new TimingsGenerator(plugin);
-    }
-
-    static void shutdown() {
-        if (INSTANCE != null) {
-            INSTANCE.end();
-            INSTANCE = null;
-        }
-    }
-
-    private void end() {
-        scheduler.shutdownNow();
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 
     @Override
     public void sendMessage(String message) {
         if (message != null) {
-            fileLogger.write(ChatColor.stripColor(message));
+            scheduler.execute(() -> write(ChatColor.stripColor(message)));
         }
     }
 
@@ -78,9 +74,20 @@ public class TimingsGenerator extends TimingsReportListener {
         scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.HOURS);
     }
 
-    private void checkLogFiles() {
-        Path dirPath = fileLogger.getDirectory();
+    private void write(String str) {
+        LocalDate date = LocalDate.now();
+        Path file = dirPath.resolve(DateTimeFormatter.ISO_LOCAL_DATE.format(date) + ".log");
 
+        try (BufferedWriter writer = Files.newBufferedWriter(file,
+                StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.WRITE)) {
+            writer.write(str);
+            writer.newLine();
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not write to " + file.toString(), e);
+        }
+    }
+
+    private void checkLogFiles() {
         if (!Files.exists(dirPath)) {
             return;
         }

@@ -1,37 +1,41 @@
 package net.okocraft.timingsgenerator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TimingsGeneratorPlugin extends JavaPlugin {
 
-    private final boolean isPaper = checkPaper();
+    private static final boolean IS_PAPER;
 
-    private static boolean checkPaper() {
+    static {
+        boolean bool;
+
         try {
             Class.forName("co.aikar.timings.Timing");
-            return true;
+            bool = true;
         } catch (ClassNotFoundException e) {
-            return false;
+            bool = false;
         }
+
+        IS_PAPER = bool;
     }
+
+    private TimingsGenerator generator;
 
     @Override
     public void onDisable() {
-        if (isPaper) {
-            TimingsGenerator.shutdown();
-            Bukkit.getScheduler().cancelTasks(this);
+        if (IS_PAPER) {
+            generator.shutdown();
         }
     }
 
     @Override
     public void onEnable() {
-        if (isPaper) {
-            TimingsGenerator.start(this);
+        if (IS_PAPER) {
+            generator = new TimingsGenerator(this);
         } else {
             getLogger().severe("This server is not running on Paper!");
             getLogger().severe("Disabling plugin...");
-            Bukkit.getPluginManager().disablePlugin(this);
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 }
