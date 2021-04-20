@@ -1,6 +1,6 @@
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/okocraft/TimingsGenerator)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/okocraft/TimingsGenerator/Java%20CI)
-![GitHub](https://img.shields.io/github/license/okocraft/TimingsGenerator)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/jaoafa/TimingsGenerator)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jaoafa/TimingsGenerator/Java%20CI)
+![GitHub](https://img.shields.io/github/license/jaoafa/TimingsGenerator)
 
 # TimingsGenerator
 
