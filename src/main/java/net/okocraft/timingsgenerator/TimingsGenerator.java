@@ -68,7 +68,6 @@ public class TimingsGenerator extends TimingsReportListener {
 
     @Override
     public void sendMessage(String message){
-        System.out.println("sendMessage(message)");
         Pattern pattern = Pattern.compile("View Timings Report: (.+)");
         Matcher matcher = pattern.matcher(message);
 
