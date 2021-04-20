@@ -4,6 +4,7 @@ import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsReportListener;
 import com.github.siroshun09.configapi.bukkit.BukkitYamlFactory;
 import com.github.siroshun09.configapi.common.Configuration;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.io.BufferedWriter;
@@ -16,10 +17,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TimingsGenerator extends TimingsReportListener {
 
@@ -29,13 +33,16 @@ public class TimingsGenerator extends TimingsReportListener {
     private final Path dirPath;
     private final ScheduledExecutorService scheduler;
 
-    TimingsGenerator(TimingsGeneratorPlugin plugin) {
+    TimingsGenerator(TimingsGeneratorPlugin plugin) throws IOException {
         super(plugin.getServer().getConsoleSender());
 
         this.plugin = plugin;
 
         config = BukkitYamlFactory.loadUnsafe(plugin, "config.yml");
         dirPath = plugin.getDataFolder().toPath().resolve("logs");
+        if(!Files.exists(dirPath)){
+            Files.createDirectory(dirPath);
+        }
         scheduler = Executors.newSingleThreadScheduledExecutor();
 
         reschedule();
@@ -49,7 +56,8 @@ public class TimingsGenerator extends TimingsReportListener {
         scheduler.shutdown();
 
         try {
-            scheduler.awaitTermination(1, TimeUnit.SECONDS);
+            boolean bool = scheduler.awaitTermination(1, TimeUnit.SECONDS);
+            if(!bool) System.out.println("Error: Scheduler timeout.");
         } catch (InterruptedException e) {
             plugin.getLogger().log(Level.SEVERE, "", e);
             e.printStackTrace();
@@ -59,9 +67,15 @@ public class TimingsGenerator extends TimingsReportListener {
     }
 
     @Override
-    public void sendMessage(String message) {
-        if (message != null) {
-            scheduler.execute(() -> write(ChatColor.stripColor(message)));
+    public void sendMessage(String message){
+        System.out.println("sendMessage(message)");
+        Pattern pattern = Pattern.compile("View Timings Report: (.+)");
+        Matcher matcher = pattern.matcher(message);
+
+        if (matcher.find()) {
+            double[] tps = Bukkit.getServer().getTPS();
+            String result = Arrays.toString(tps) + " " + matcher.group(1);
+            scheduler.execute(() -> write(ChatColor.stripColor(result)));
         }
     }
 
@@ -70,7 +84,7 @@ public class TimingsGenerator extends TimingsReportListener {
     }
 
     private void reschedule() {
-        long interval = config.getLong("interval", 3);
+        long interval = config.getLong("interval", 1);
         scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.HOURS);
     }
 
@@ -79,11 +93,11 @@ public class TimingsGenerator extends TimingsReportListener {
         Path file = dirPath.resolve(DateTimeFormatter.ISO_LOCAL_DATE.format(date) + ".log");
 
         try (BufferedWriter writer = Files.newBufferedWriter(file,
-                StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.WRITE)) {
+                StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE)) {
             writer.write(str);
             writer.newLine();
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Could not write to " + file.toString(), e);
+            plugin.getLogger().log(Level.SEVERE, "Could not write to " + file, e);
         }
     }
 
@@ -119,7 +133,7 @@ public class TimingsGenerator extends TimingsReportListener {
     private void delete(Path path) {
         try {
             Files.deleteIfExists(path);
-            plugin.getLogger().info("The file was deleted: " + path.toAbsolutePath().toString());
+            plugin.getLogger().info("The file was deleted: " + path.toAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
