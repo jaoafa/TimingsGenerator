@@ -6,6 +6,7 @@ import com.github.siroshun09.configapi.bukkit.BukkitYamlFactory;
 import com.github.siroshun09.configapi.common.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class TimingsGenerator extends TimingsReportListener {
     }
 
     @Override
-    public void sendMessage(String message){
+    public void sendMessage(@NotNull String message){
         Pattern pattern = Pattern.compile("View Timings Report: (.+)");
         Matcher matcher = pattern.matcher(message);
 

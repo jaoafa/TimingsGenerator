@@ -1,8 +1,8 @@
+# TimingsGenerator
+
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/jaoafa/TimingsGenerator)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jaoafa/TimingsGenerator/Java%20CI)
 ![GitHub](https://img.shields.io/github/license/jaoafa/TimingsGenerator)
-
-# TimingsGenerator
 
 Timings の URL を定期的に自動生成する Paper プラグインです。
 
@@ -10,8 +10,8 @@ Timings の URL を定期的に自動生成する Paper プラグインです。
 
 ## Requirements
 
-- Java 1.8
-- **Paper** (Minecraft Version 1.15+, Tested with 1.16.5, not working with Spigot)
+- Java 17
+- **Paper** (Minecraft Version 1.15+, Tested with 1.18.1, not working with Spigot)
 
 ## Usage
 
