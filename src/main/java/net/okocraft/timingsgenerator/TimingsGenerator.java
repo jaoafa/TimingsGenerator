@@ -104,8 +104,7 @@ public class TimingsGenerator extends TimingsReportListener implements Runnable 
 
     private void reschedule() {
         long interval = config.getLong("interval", 1);
-        //scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.HOURS);
-        scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.HOURS);
     }
 
     @Override
