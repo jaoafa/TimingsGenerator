@@ -6,7 +6,7 @@
 
     <groupId>net.okocraft</groupId>
     <artifactId>timingsgenerator</artifactId>
-    <version>1.3-p1.3</version>
+    <version>1.3-p1.4</version>
 
     <name>TimingsGenerator</name>
     <url>https://github.com/jaoafa/TimingsGenerator</url>
@@ -97,7 +97,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0-SNAPSHOT</version>
+                <version>3.3.1-SNAPSHOT</version>
                 <configuration>
                     <finalName>${project.name}-${project.version}</finalName>
                     <filters>

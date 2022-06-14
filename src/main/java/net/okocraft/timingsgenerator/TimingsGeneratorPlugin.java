@@ -21,7 +21,7 @@ public class TimingsGeneratorPlugin extends JavaPlugin {
         IS_PAPER = bool;
     }
 
-    private TimingsGenerator generator;
+    private static TimingsGenerator generator;
 
     @Override
     public void onDisable() {
@@ -46,5 +46,9 @@ public class TimingsGeneratorPlugin extends JavaPlugin {
             getLogger().severe("Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
         }
+    }
+
+    public static TimingsGenerator getGenerator() {
+        return generator;
     }
 }
