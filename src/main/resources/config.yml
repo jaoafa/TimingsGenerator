@@ -1,2 +1,3 @@
-interval: 3 # 自動 URL 生成間隔 (時間)
+interval: 3 # 自動 URL 生成間隔
+interval-unit: hours # 自動 URL 生成間隔の単位
 auto-delete: true # ログファイルの自動削除機能の有無

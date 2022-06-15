@@ -4,6 +4,7 @@ import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsReportListener;
 import com.github.siroshun09.configapi.bukkit.BukkitYamlFactory;
 import com.github.siroshun09.configapi.common.Configuration;
+import com.google.common.collect.Lists;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class TimingsGenerator extends TimingsReportListener implements Runnable {
+public class TimingsGenerator extends TimingsReportListener {
 
     private final TimingsGeneratorPlugin plugin;
 
@@ -73,6 +75,15 @@ public class TimingsGenerator extends TimingsReportListener implements Runnable 
 
     @Override
     public void sendMessage(@NotNull String message) {
+        parseMessage(message);
+    }
+
+    @Override
+    public void sendMessage(final @NotNull net.kyori.adventure.identity.Identity source, final @NotNull net.kyori.adventure.text.Component message, final @NotNull net.kyori.adventure.audience.MessageType type) {
+        parseMessage(PlainTextComponentSerializer.plainText().serialize(message));
+    }
+
+    void parseMessage(String message){
         Pattern pattern = Pattern.compile("View Timings Report: (.+)");
         Matcher matcher = pattern.matcher(message);
 
@@ -84,32 +95,25 @@ public class TimingsGenerator extends TimingsReportListener implements Runnable 
     }
 
     @Override
-    public void sendMessage(final @NotNull net.kyori.adventure.identity.Identity source, final @NotNull net.kyori.adventure.text.Component message, final @NotNull net.kyori.adventure.audience.MessageType type) {
-        String rawMessage = PlainTextComponentSerializer.plainText().serialize(message);
-        plugin.getLogger().info("sendMessage: " + rawMessage);
-        Pattern pattern = Pattern.compile("View Timings Report: (.+)");
-        Matcher matcher = pattern.matcher(rawMessage);
-
-        if (matcher.find()) {
-            double[] tps = Bukkit.getServer().getTPS();
-            String result = Arrays.toString(tps) + " " + matcher.group(1);
-            scheduler.execute(() -> write(ChatColor.stripColor(result)));
-        }
+    public @NotNull Iterable<? extends net.kyori.adventure.audience.Audience> audiences() {
+        return Lists.newArrayList();
     }
 
     private void generate() {
         plugin.getServer().getScheduler().runTask(plugin, () -> Timings.generateReport(this));
-
     }
 
     private void reschedule() {
         long interval = config.getLong("interval", 1);
-        scheduler.scheduleAtFixedRate(this::generate, interval, interval, TimeUnit.HOURS);
-    }
-
-    @Override
-    public void run() {
-        plugin.getLogger().info("URL: " + getTimingsURL());
+        String rawUnit = config.getString("interval-unit", "hours");
+        try {
+            TimeUnit unit = TimeUnit.valueOf(rawUnit.toUpperCase());
+            scheduler.scheduleAtFixedRate(this::generate, interval, interval, unit);
+        } catch (IllegalArgumentException e) {
+            plugin.getLogger().severe("Invalid interval unit: " + rawUnit);
+            plugin.getLogger().severe("Disabling plugin...");
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+        }
     }
 
     private void write(String str) {
